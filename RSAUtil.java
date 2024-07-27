@@ -1,10 +1,8 @@
-package com.cats.common.core.util;
+package com.cats.common.core;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.cats.common.core.base.enums.CommonLogType;
-import com.cats.common.core.log.LogUtil;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +45,7 @@ public class RSAUtil {
             keyPairGen.initialize(KEY_SIZE, new SecureRandom());
             // 生成一个密钥对，保存在keyPair中
             KeyPair keyPair = keyPairGen.generateKeyPair();
-            RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();   // 得到私钥
+            RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();   // 得到私钥 Base64.decodeBase64
             RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();  // 得到公钥
             String publicKeyString = new String(Base64.encodeBase64(publicKey.getEncoded()));
             // 得到私钥字符串
@@ -162,7 +160,7 @@ public class RSAUtil {
             }
             return URLDecoder.decode(sb.toString(), "UTF-8");
         } catch (Exception e) {
-            LogUtil.error(CommonLogType.CODE_ERROR, "decrypt4LongTextByPublicKey解密出现异常", e.getMessage(), e);
+            System.out.println("decrypt4LongTextByPublicKey解密出现异常");
             return null;
         }
     }
@@ -180,7 +178,7 @@ public class RSAUtil {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> sortParams = new TreeMap<>(params);
         sortParams.forEach((key, value) -> {
-            if (U.isNotBlank(value)) {
+            if (!StringUtils.isEmpty(value)) {
                 sb.append(key).append("=").append(value).append("&");
             }
         });
@@ -259,7 +257,7 @@ public class RSAUtil {
             }
             return URLDecoder.decode(sb.toString(), "UTF-8");
         } catch (Exception e) {
-            LogUtil.error(CommonLogType.CODE_ERROR, "decrypt4LongText解密出现异常", e.getMessage(), e);
+            System.out.println("decrypt4LongText解密出现异常");
             return null;
         }
     }
@@ -295,15 +293,15 @@ public class RSAUtil {
                     sb.append(JOIN_CHAR_2).append(key).append(JOIN_CHAR_1).append(value);
             }
             String md5 = DigestUtils.md5Hex(sb.toString()).toUpperCase();
-            LogUtil.info(CommonLogType.CODE_COMMON, "verifySign验签参数", sb.toString(), md5);
+            System.out.println("verifySign验签参数");
             return signValue.equals(md5);
         } catch (Exception e) {
-            LogUtil.error(CommonLogType.CODE_ERROR, "verifySign验签出现问题", e.getMessage(), e);
+            System.out.println("verifySign验签出现问题");
             return false;
         }
     }
 
-    
+
 
     /**
      * 对单词列表进行冒泡排序
